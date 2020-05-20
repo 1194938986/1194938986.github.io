@@ -1,0 +1,294 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="Hexo">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://yoursite.com">
+    <!--SEO-->
+
+<meta name="keywords" content="" />
+
+
+<meta name="description" content="$$窍诀：遇到 env 就是 JAVA_HOME$$
+1）core-site.xml：​    （1）fs.defaultFS:hdfs://cluster1(域名)，这里的值指的是默认的 HD..." />
+
+
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
+    <!--Title-->
+
+<title>
+    
+    Hadoop中需要哪些配置文件，其作用是什么？ |
+    
+    Hexo
+</title>
+
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
+    
+<div class="hide">
+    <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cspan class='cnzz_stat_icon_1263868967 hide' %3E%3Cscript%20src%3D%22https%3A%2F%2Fs95.cnzz.com%2Fz_stat.php%3Fweb_id%3D1272564536%22%3E%3C%2Fscript%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1263868967%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+</div>
+
+
+
+
+    
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://snippet.shenliyang.com/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='血柒柒柒柒柒柒'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <h2>
+                她说的对、她说的都对
+            </h2>
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://yoursite.com">
+                        Hexo</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/shuoshuo/"><i class="fa "></i>
+                                说说</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                Home</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                小工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="Hadoop中需要哪些配置文件，其作用是什么？">
+            
+            Hadoop中需要哪些配置文件，其作用是什么？
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2020/05/15</span>
+    </span>
+    
+    
+</div>
+        
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <p>$$<br>窍诀：遇到 env 就是 JAVA_HOME<br>$$</p>
+<h3 id="1）core-site-xml："><a href="#1）core-site-xml：" class="headerlink" title="1）core-site.xml："></a>1）core-site.xml：</h3><p>​    （1）fs.defaultFS:hdfs://cluster1(域名)，这里的值指的是默认的 HDFS 路径 。</p>
+<p>​    （2）hadoop.tmp.dir:/export/data/hadoop_tmp，这里的路径默认是 NameNode、DataNode、secondaryNamenode 等存放数据的公共目录。用户可以自己单独指定这三类节点的目录。</p>
+<p>​    （3）ha.zookeeper.quorum:hadoop101:2181,hadoop102:2181,hadoop103:2181,这里的 ZooKeeper 集群的地址和端口。注意，数量一定是奇数，且不少于三个节点。</p>
+<h3 id="2）hadoop-env-sh："><a href="#2）hadoop-env-sh：" class="headerlink" title="2）hadoop-env.sh："></a>2）hadoop-env.sh：</h3><p>只需设置 jdk 的安装路径，如：export JAVA_HOME=/opt/module/jdk1.8.0_144</p>
+<h3 id="3）hdfs-site-xml："><a href="#3）hdfs-site-xml：" class="headerlink" title="3）hdfs-site.xml："></a>3）hdfs-site.xml：</h3><p>​    （1）dfs.replication:它决定着系统里面的文件块的数据备份个数，默认为3个。</p>
+<p>​    （2）dfs.data.dir:datanode 节点储存在文件系统的目录。</p>
+<p>​    （3）dfs.name.dir:是 namenode 节点存储 hadoop 文件系统信息的本地系统路径。</p>
+<h3 id="4）mapred-site-xml："><a href="#4）mapred-site-xml：" class="headerlink" title="4）mapred-site.xml："></a>4）mapred-site.xml：</h3><p>mapreduce.framework.name: yarn 指定 mr 运行在 yarn 上。</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">Snippet</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    <a href="/2020/05/15/%E8%AF%B7%E5%88%97%E5%87%BA%E6%AD%A3%E5%B8%B8%E5%B7%A5%E4%BD%9C%E7%9A%84Hadoop%E9%9B%86%E7%BE%A4%E4%B8%ADHadoop%E9%83%BD%E5%88%86%E5%88%AB%E9%9C%80%E8%A6%81%E5%90%AF%E5%8A%A8%E5%93%AA%E4%BA%9B%E8%BF%9B%E7%A8%8B%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E4%BD%9C%E7%94%A8%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F/" class="pre-post btn btn-default" title=''请列出正常工作的Hadoop集群中Hadoop都分别需要启动哪些进程，它们的作用分别是什么？''>
+        <i class="fa fa-angle-left fa-fw"></i><span class="hidden-lg">上一篇</span>
+        <span class="hidden-xs">
+            '请列出正常工作的Hadoop集群中Hadoop都分别需要启动哪些进程，它们的作用分别是什么？'</span>
+    </a>
+    
+    
+    <a href="/2020/05/14/%E7%AE%80%E8%A6%81%E6%8F%8F%E8%BF%B0%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEapache%E7%9A%84%E4%B8%80%E4%B8%AA%E5%BC%80%E6%BA%90Hadoop/" class="next-post btn btn-default" title=''简要描述如何安装配置apache的一个开源Hadoop''>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            '简要描述如何安装配置apache的一个开源Hadoop'</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+
+<div id="vcomments" class="valine"></div>
+
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		app_id: 'hfhqeIL3TOJmlAKYYzv03gxG-gzGzoHsz',
+		app_key: '5pw8FTE8Y0Osfu6YgyBdYa5r',
+		placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊！',
+		pageSize:'10'
+	});
+</script>
+
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            Table of Contents
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1）core-site-xml："><span class="toc-text">1）core-site.xml：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2）hadoop-env-sh："><span class="toc-text">2）hadoop-env.sh：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3）hdfs-site-xml："><span class="toc-text">3）hdfs-site.xml：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4）mapred-site-xml："><span class="toc-text">4）mapred-site.xml：</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2017
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
+</body>
+</html>

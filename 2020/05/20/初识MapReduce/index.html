@@ -1,0 +1,400 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <!--Setting-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta name="apple-mobile-web-app-capable" content="Hexo">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no,email=no,adress=no">
+    <meta name="browsermode" content="application">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="theme-version" content="1.2.3">
+    <meta name="root" content="/">
+    <link rel="dns-prefetch" href="http://yoursite.com">
+    <!--SEO-->
+
+<meta name="keywords" content="study-note" />
+
+
+<meta name="description" content="1）目的编程实现按日期统计访问次数
+编程实现按访问次数排序
+
+2）Create 3个类，Driver，Mapper，Reducer！注意Mapper继承Mapper，Reducer继承Reduc..." />
+
+
+<meta name="robots" content="all" />
+<meta name="google" content="all" />
+<meta name="googlebot" content="all" />
+<meta name="verify" content="all" />
+    <!--Title-->
+
+<title>
+    
+    &#39;初识MapReduce&#39; |
+    
+    Hexo
+</title>
+
+<link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+
+
+<link rel="icon" href="/favicon.ico">
+
+    
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css?rev=3.3.7.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css?rev=4.7.0.css">
+<link rel="stylesheet" href="/css/style.css?rev=@@hash.css">
+
+    
+<div class="hide">
+    <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+    document.write(unescape("%3Cspan class='cnzz_stat_icon_1263868967 hide' %3E%3Cscript%20src%3D%22https%3A%2F%2Fs95.cnzz.com%2Fz_stat.php%3Fweb_id%3D1272564536%22%3E%3C%2Fscript%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s19.cnzz.com/z_stat.php%3Fid%3D1263868967%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+</div>
+
+
+
+
+    
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<!--[if lte IE 8]>
+<style>
+    html{ font-size: 1em }
+</style>
+<![endif]-->
+<!--[if lte IE 9]>
+<div style="ie">你使用的浏览器版本过低，为了你更好的阅读体验，请更新浏览器的版本或者使用其他现代浏览器，比如Chrome、Firefox、Safari等。</div>
+<![endif]-->
+<body>
+    <header class="main-header"  style="background-image:url(
+    http://snippet.shenliyang.com/img/banner.jpg)"
+     >
+    <div class="main-header-box">
+        <a class="header-avatar" href="/" title='血柒柒柒柒柒柒'>
+            <img src="/img/avatar.jpg" alt="logo头像" class="img-responsive center-block">
+        </a>
+        <div class="branding">
+            <!--<h2 class="text-hide">Snippet主题,从未如此简单有趣</h2>-->
+            
+            <h2>
+                她说的对、她说的都对
+            </h2>
+            
+        </div>
+    </div>
+</header>
+    <nav class="main-navigation">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header"><span class="nav-toggle-button collapsed pull-right" data-toggle="collapse" data-target="#main-menu" id="mnav">
+                        <span class="sr-only"></span>
+                        <i class="fa fa-bars"></i>
+                    </span>
+                    <a class="navbar-brand" href="http://yoursite.com">
+                        Hexo</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="menu">
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/shuoshuo/"><i class="fa "></i>
+                                说说</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/"><i class="fa "></i>
+                                Home</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/categories/工具/"><i class="fa "></i>
+                                小工具</a>
+                        </li>
+                        
+                        <li role="presentation" class="text-center">
+                            <a href="/archives/"><i class="fa "></i>
+                                时间轴</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <section class="content-wrap">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8 main-content m-post">
+                    <p id="process"></p>
+<article class="post">
+    <div class="post-head">
+        <h1 id="&#39;初识MapReduce&#39;">
+            
+            &#39;初识MapReduce&#39;
+            
+        </h1>
+        <div class="post-meta">
+    
+    <span class="categories-meta fa-wrap">
+        <i class="fa fa-folder-open-o"></i>
+        
+    </span>
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-tags"></i>
+        <span class="tags-meta">
+            
+            <a class="tag-link" href="/tags/study-note/" rel="tag">study-note</a>
+            
+        </span>
+    </span>
+    
+    
+    
+    <span class="fa-wrap">
+        <i class="fa fa-clock-o"></i>
+        <span class="date-meta">
+            2020/05/20</span>
+    </span>
+    
+    
+</div>
+        
+        
+    </div>
+    
+    <div class="post-body post-content">
+        <h5 id="1）目的"><a href="#1）目的" class="headerlink" title="1）目的"></a>1）目的</h5><p>编程实现按日期统计访问次数</p>
+<p>编程实现按访问次数排序</p>
+<p><img src="/2020/05/20/%E5%88%9D%E8%AF%86MapReduce/C:%5CUsers%5C11949%5Cblog%5Csource_posts%5C%E5%88%9D%E8%AF%86MapReduce%5Cimage-20200520040953516.png" alt="image-20200520040953516"></p>
+<h5 id="2）Create-3个类，Driver，Mapper，Reducer"><a href="#2）Create-3个类，Driver，Mapper，Reducer" class="headerlink" title="2）Create 3个类，Driver，Mapper，Reducer"></a>2）Create 3个类，Driver，Mapper，Reducer</h5><p>！注意Mapper继承Mapper，Reducer继承Reducer！</p>
+<p><img src="/2020/05/20/%E5%88%9D%E8%AF%86MapReduce/C:%5CUsers%5C11949%5Cblog%5Csource_posts%5C%E5%88%9D%E8%AF%86MapReduce%5Cimage-20200520042434345.png" alt="image-20200520042434345"></p>
+<h5 id="3）我的理解-•-̀ω•́-✧"><a href="#3）我的理解-•-̀ω•́-✧" class="headerlink" title="3）我的理解( • ̀ω•́ )✧"></a>3）我的理解( • ̀ω•́ )✧</h5><p>首先，（某种程度上）是这样一个流程 Driver —&gt; Map —&gt; Reducer</p>
+<h6 id="①先来看看-Driver"><a href="#①先来看看-Driver" class="headerlink" title="①先来看看 Driver"></a>①先来看看 Driver</h6><p><img src="/2020/05/20/%E5%88%9D%E8%AF%86MapReduce/C:%5CUsers%5C11949%5Cblog%5Csource_posts%5C%E5%88%9D%E8%AF%86MapReduce%5Cimage-20200520042805070.png" alt="image-20200520042805070"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1 获取配置信息以及封装任务</span></span><br><span class="line">		Configuration configuration = <span class="keyword">new</span> Configuration();</span><br><span class="line">		Job job = Job.getInstance(configuration);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 7 提交</span></span><br><span class="line">		<span class="keyword">boolean</span> result = job.waitForCompletion(<span class="keyword">true</span>);</span><br><span class="line">		System.exit(result ? <span class="number">0</span> : <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>！这是惯用套路，照抄即可</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2 设置jar加载路径</span></span><br><span class="line">		job.setJarByClass(CountDriver<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>！CountDriver.class 也就是你这个 Driver 它的类名，同样是惯用套路，变通一下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 3 设置map和reduce类</span></span><br><span class="line">		job.setMapperClass(CountMapper<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">		job.setReducerClass(CountReducer<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>！CountMapper.class 跟 CountReducer.class 是 Mapper 和 Reducer 她们的类名，同样，变通</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 6 设置输入和输出路径</span></span><br><span class="line">FileInputFormat.setInputPaths(job, <span class="keyword">new</span> Path(args[<span class="number">0</span>]));</span><br><span class="line">FileOutputFormat.setOutputPath(job, <span class="keyword">new</span> Path(args[<span class="number">1</span>]));</span><br></pre></td></tr></table></figure>
+
+<p>这个 args 是啥？</p>
+<p>还记得我们小时候敲命令                    （ 下面的 com.xueqi.wordcount 是项目下 src 中的一个包）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root<span class="meta">@B</span>0 software]$ hadoop jar  wc.jar</span><br><span class="line">com.xueqi.wordcount.WordcountDriver /user/atguigu/input /user/atguigu/output</span><br></pre></td></tr></table></figure>
+
+<p><strong>jar包</strong>（wc.jar）+ <strong>Driver类名</strong>（com.xueqi.wordcount.WordcountDriver）+ <strong>参数</strong> args</p>
+<p>也就是说，跟在类名后面的全部都是 args （ /user/atguigu/input  /user/atguigu/output）</p>
+<p>再比如，这段经典代码中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[atguigu<span class="meta">@hadoop</span>101 hadoop-<span class="number">2.7</span><span class="number">.2</span>]$ bin/hadoop jar</span><br><span class="line"></span><br><span class="line">share/hadoop/mapreduce/hadoop-mapreduce-examples-<span class="number">2.7</span><span class="number">.2</span>.jar grep input output <span class="string">'dfs[a-z.]+'</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>grep 是 Driver 类名input output ‘dfs[a-z.]+’ 作为 agrs[] 传入到 Driver，此时 agrs 这个 String 数组长度为 3</strong></p>
+<h6 id="②大概搞懂了-Driver-，我们接着往下走"><a href="#②大概搞懂了-Driver-，我们接着往下走" class="headerlink" title="②大概搞懂了 Driver ，我们接着往下走"></a>②大概搞懂了 Driver ，我们接着往下走</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FileInputFormat.setInputPaths(job, <span class="keyword">new</span> Path(args[<span class="number">0</span>]));</span><br></pre></td></tr></table></figure>
+
+<p>它设置了输入路径，也就是一个文件的路径，我们会把这个文件读入Mapper，比如：email_login</p>
+<p>那么，问题来了，email_login 是怎样读进 Mapper 的？</p>
+<p>看幅图</p>
+<p><img src="/2020/05/20/%E5%88%9D%E8%AF%86MapReduce/C:%5CUsers%5C11949%5Cblog%5Csource_posts%5C%E5%88%9D%E8%AF%86MapReduce%5Cimage-20200520051201581.png" alt="image-20200520051201581"></p>
+<p>也就是说，email_login被读进来的时候，是这样的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//对应&lt;key,value&gt;</span></span><br><span class="line"></span><br><span class="line">(<span class="number">0</span>,HillarSt<span class="meta">@CardBlvdsnaase</span>.no)	</span><br><span class="line">(<span class="number">27</span>,p_b<span class="meta">@Care</span>2www.ro)</span><br><span class="line">(<span class="number">43</span>,su.h<span class="meta">@UseNM</span>.netloabat.no)</span><br></pre></td></tr></table></figure>
+
+<p>MapReduce 有自个封装的数据类型，请看这张图</p>
+<table>
+<thead>
+<tr>
+<th><strong><em>\</em>Java类型**</strong></th>
+<th><strong><em>\</em>Hadoop Writable类型**</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>boolean</td>
+<td>BooleanWritable</td>
+</tr>
+<tr>
+<td>byte</td>
+<td>ByteWritable</td>
+</tr>
+<tr>
+<td>int</td>
+<td>IntWritable</td>
+</tr>
+<tr>
+<td>float</td>
+<td>FloatWritable</td>
+</tr>
+<tr>
+<td>long</td>
+<td>LongWritable</td>
+</tr>
+<tr>
+<td>double</td>
+<td>DoubleWritable</td>
+</tr>
+<tr>
+<td>String</td>
+<td>Text</td>
+</tr>
+<tr>
+<td>map</td>
+<td>MapWritable</td>
+</tr>
+<tr>
+<td>array</td>
+<td>ArrayWritable</td>
+</tr>
+</tbody></table>
+<p>Mapper 干了什么呢？</p>
+<p><img src="/2020/05/20/%E5%88%9D%E8%AF%86MapReduce/C:%5CUsers%5C11949%5Cblog%5Csource_posts%5C%E5%88%9D%E8%AF%86MapReduce%5Cimage-20200520073731129.png" alt="image-20200520073731129"></p>
+<p>这是为了避免空数据，比如：                        莫名一空行</p>
+<p><img src="/2020/05/20/%E5%88%9D%E8%AF%86MapReduce/C:%5CUsers%5C11949%5Cblog%5Csource_posts%5C%E5%88%9D%E8%AF%86MapReduce%5Cimage-20200520073826910.png" alt="image-20200520073826910"></p>
+<p>显然，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">0</span>,HillarSt<span class="meta">@CardBlvdsnaase</span>.no)	---&gt;	(HillarSt<span class="meta">@CardBlvdsnaase</span>.no,<span class="number">1</span>)</span><br><span class="line">(<span class="number">27</span>,p_b<span class="meta">@Care</span>2www.ro)	---&gt;	(p_b<span class="meta">@Care</span>2www.ro,<span class="number">1</span>)</span><br><span class="line">(<span class="number">43</span>,su.h<span class="meta">@UseNM</span>.netloabat.no)	---&gt;	(su.h<span class="meta">@UseNM</span>.netloabat.no,<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>是吧！</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;Text, Text, Text, LongWritable&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//前两个是输入的&lt;key,value&gt;类型，后两个则是要输出到Reducer去的&lt;key,value&gt;类型</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h6 id="③Reducer-干了什么呢"><a href="#③Reducer-干了什么呢" class="headerlink" title="③Reducer 干了什么呢"></a>③Reducer 干了什么呢</h6><p>Reducer 它它它它它会干些什么呢？</p>
+<p>好！</p>
+<p>它会把不同的 key 进行 一次汇总，也就是说，每一个 key 都会经历各自一个独立的 Reduce 阶段，也是说同一个 key 的 value 会进入同一个 Reduce 阶段</p>
+<p>看源码：</p>
+<p><img src="/2020/05/20/%E5%88%9D%E8%AF%86MapReduce/C:%5CUsers%5C11949%5Cblog%5Csource_posts%5C%E5%88%9D%E8%AF%86MapReduce%5Cimage-20200520061235816.png" alt="image-20200520061235816"></p>
+<p>如果这样写，也就是把一个 key 对应的 value 都给加起来，这也就是访问次数了，因为传进来的都是 </p>
+<p>（xxx@xxx，1）嘛，xxx@xxx 是邮箱名，那我们把一个邮箱名对应的 value 全部加起来，那不就是访问次数了？</p>
+<p>运行结果长这样：</p>
+<p><img src="/2020/05/20/%E5%88%9D%E8%AF%86MapReduce/C:%5CUsers%5C11949%5Cblog%5Csource_posts%5C%E5%88%9D%E8%AF%86MapReduce%5Cimage-20200520073329931.png" alt="image-20200520073329931"></p>
+<h6 id="④我们第二个目标是要按次数排序"><a href="#④我们第二个目标是要按次数排序" class="headerlink" title="④我们第二个目标是要按次数排序"></a>④我们第二个目标是要按次数排序</h6><p>我们稍微改动下 Reducer 的 Code</p>
+<p>我们先新建一个类，用它封装 <strong>次数</strong> 跟 <strong>邮箱</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> helloworld;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.Text;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Data</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Data</span>&gt;</span>&#123;</span><br><span class="line">	<span class="comment">//继承Comparable接口，实现自定义排序</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> key;<span class="comment">//次数</span></span><br><span class="line">	<span class="keyword">private</span> Text web;<span class="comment">//邮箱</span></span><br><span class="line">		</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Data</span><span class="params">()</span> </span>&#123;<span class="comment">//无参构造器</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Data</span><span class="params">(<span class="keyword">int</span> key, Text web)</span> </span>&#123;<span class="comment">//双参构造器</span></span><br><span class="line">		<span class="keyword">super</span>();</span><br><span class="line">		<span class="keyword">this</span>.key = key;</span><br><span class="line">		<span class="keyword">this</span>.web = web;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	 <span class="meta">@Override</span></span><br><span class="line">	 <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Data o)</span> </span>&#123;</span><br><span class="line">		 <span class="keyword">if</span>(<span class="keyword">this</span>.key &gt; o.key)<span class="comment">//像金字塔一样，大的在下，小的在上</span></span><br><span class="line">		 &#123;</span><br><span class="line">			 <span class="keyword">return</span> -<span class="number">1</span>;				<span class="comment">//		-1</span></span><br><span class="line">		 &#125;							<span class="comment">//		0</span></span><br><span class="line">		 <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.key == o.key)<span class="comment">//		1</span></span><br><span class="line">		 &#123;</span><br><span class="line">			 <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		 &#125;</span><br><span class="line">		 <span class="keyword">else</span> &#123;</span><br><span class="line">			 <span class="keyword">return</span> <span class="number">1</span>;<span class="comment">//所以这3个if的意思就是大的往上扔</span></span><br><span class="line">		 &#125;</span><br><span class="line">	 &#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> key;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setKey</span><span class="params">(<span class="keyword">int</span> key)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.key = key;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Text <span class="title">getWeb</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> web;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setWeb</span><span class="params">(Text web)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.web = web;</span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后修改Reducer</p>
+<p>clean 是在所有 reduce 完后才执行的一个继承类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//也就是</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//把 Mapper 传处，Reduce 读入的数据先给他添加进一个容器</span></span><br><span class="line">(HillarSt<span class="meta">@CardBlvdsnaase</span>.no,<span class="number">1</span>)</span><br><span class="line">(p_b<span class="meta">@Care</span>2www.ro,<span class="number">1</span></span><br><span class="line">(p_b<span class="meta">@Care</span>2www.ro,<span class="number">1</span>)</span><br><span class="line">(p_aaa<span class="meta">@Cet</span>,<span class="number">1</span>)</span><br><span class="line">(p_aaa<span class="meta">@Cet</span>,<span class="number">1</span>)</span><br><span class="line">(p_aaa<span class="meta">@Cet</span>,<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">//我是那个容器，我长这样</span></span><br><span class="line">(<span class="number">1</span>，HillarSt<span class="meta">@CardBlvdsnaase</span>.no)</span><br><span class="line">(<span class="number">2</span>，p_b<span class="meta">@Care</span>2www.ro)</span><br><span class="line">(<span class="number">3</span>，p_aaa<span class="meta">@Cet</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">//clean阶段</span></span><br><span class="line">(HillarSt<span class="meta">@CardBlvdsnaase</span>.no，<span class="number">1</span>)</span><br><span class="line">(p_b<span class="meta">@Care</span>2www.ro，<span class="number">2</span>)</span><br><span class="line">(p_aaa<span class="meta">@Cet</span>，<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<h6 id="⑤-查看结果"><a href="#⑤-查看结果" class="headerlink" title="⑤ 查看结果"></a>⑤ 查看结果</h6><h5 id="4）一定要注意导入包"><a href="#4）一定要注意导入包" class="headerlink" title="4）一定要注意导入包"></a>4）一定要注意导入包</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Mapper</span></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.IntWritable;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.LongWritable;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.Text;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Mapper;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Reducer</span></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.TreeMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.IntWritable;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.Text;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Reducer;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Driver</span></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.conf.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.fs.Path;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.IntWritable;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.io.Text;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.Job;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</span><br><span class="line"><span class="keyword">import</span> org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</span><br></pre></td></tr></table></figure>
+
+<p>刚开始学的时候刻意去留意，</p>
+<p>再来几个关键词：mapreduce、apache、io</p>
+
+    </div>
+    
+    <div class="post-footer">
+        <div>
+            
+            转载声明：
+            商业转载请联系作者获得授权,非商业转载请注明出处 © <a href="" target="_blank">Snippet</a>
+            
+            
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</article>
+<div class="article-nav prev-next-wrap clearfix">
+    
+    
+    <a href="/2020/05/15/%E2%80%98%E7%AE%80%E8%BF%B0Hadoop%E7%9A%84%E5%87%A0%E4%B8%AA%E9%BB%98%E8%AE%A4%E7%AB%AF%E5%8F%A3%E5%8F%8A%E5%85%B6%E5%90%AB%E4%B9%89%E2%80%99/" class="next-post btn btn-default" title='‘简述Hadoop的几个默认端口及其含义’'>
+        <span class="hidden-lg">下一篇</span>
+        <span class="hidden-xs">
+            ‘简述Hadoop的几个默认端口及其含义’</span><i class="fa fa-angle-right fa-fw"></i>
+    </a>
+    
+</div>
+
+<div id="comments">
+    
+
+<div id="vcomments" class="valine"></div>
+
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="/assets/valine.min.js"></script>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		app_id: 'hfhqeIL3TOJmlAKYYzv03gxG-gzGzoHsz',
+		app_key: '5pw8FTE8Y0Osfu6YgyBdYa5r',
+		placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊！',
+		pageSize:'10'
+	});
+</script>
+
+
+</div>
+
+                </main>
+                
+                    <aside id="article-toc" role="navigation" class="col-md-4">
+    <div class="widget">
+        <h3 class="title">
+            Table of Contents
+        </h3>
+        
+        <ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#1）目的"><span class="toc-text">1）目的</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2）Create-3个类，Driver，Mapper，Reducer"><span class="toc-text">2）Create 3个类，Driver，Mapper，Reducer</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3）我的理解-•-̀ω•́-✧"><span class="toc-text">3）我的理解( • ̀ω•́ )✧</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#①先来看看-Driver"><span class="toc-text">①先来看看 Driver</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#②大概搞懂了-Driver-，我们接着往下走"><span class="toc-text">②大概搞懂了 Driver ，我们接着往下走</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#③Reducer-干了什么呢"><span class="toc-text">③Reducer 干了什么呢</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#④我们第二个目标是要按次数排序"><span class="toc-text">④我们第二个目标是要按次数排序</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#⑤-查看结果"><span class="toc-text">⑤ 查看结果</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4）一定要注意导入包"><span class="toc-text">4）一定要注意导入包</span></a></li></ol>
+        
+    </div>
+</aside>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</footer>
+<a id="back-to-top" class="icon-btn hide">
+    <i class="fa fa-chevron-up"></i>
+</a>
+    <div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="busuanzi">
+    
+</div>
+            </div>
+            <div class="col-sm-12">
+                <span>Copyright &copy;
+                    2017
+                    
+                </span> |
+                <span>
+                    Powered by <a href="//hexo.io" class="copyright-links" target="_blank" rel="nofollow">Hexo</a>
+                </span> |
+                <span>
+                    Theme by <a href="//github.com/shenliyang/hexo-theme-snippet.git" class="copyright-links" target="_blank" rel="nofollow">Snippet</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="/js/app.js?rev=@@hash.js"></script>
+
+</body>
+</html>
